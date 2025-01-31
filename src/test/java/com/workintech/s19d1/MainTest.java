@@ -206,7 +206,17 @@ class MainTest {
     @DisplayName("Delete Actor")
     void delete() {
 
-        actorService.delete(actor);
+        when(mockActorRepository.findById(actor.getId())).thenReturn(Optional.of(actor));
+        doNothing().when(mockActorRepository).delete(actor);
+
+        // When
+        Actor deletedActor = actorService.delete(actor.getId());
+
+        // Then
+        assertThat(deletedActor).isNotNull();
+        assertThat(deletedActor.getId()).isEqualTo(actor.getId());
+        verify(mockActorRepository).findById(actor.getId());
+        verify(mockActorRepository).delete(actor);
 
     }
 
